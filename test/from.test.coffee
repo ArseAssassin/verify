@@ -1,12 +1,11 @@
 assert = require "assert"
 
-verify = require "../src/verify"
+from = require "../src/from"
 
 lt = (x) -> (n) -> n < x
 
-
 describe "verify", ->
-  f = verify lt(10), lt(7), lt(5), (a, b ,c) ->
+  f = from lt(10), lt(7), lt(5), (a, b ,c) ->
     a+b+c
 
   it "should call verifiers for each argument", ->

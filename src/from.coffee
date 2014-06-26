@@ -1,7 +1,12 @@
+helpers = require "./helpers"
+
+main = require "./main"
+
 module.exports = ->
   args = Array.prototype.slice.call arguments
 
   f = args[args.length-1]
+  argumentNames = helpers.parseFunctionArguments f
   validators = args.splice(0, args.length-1)
 
   for validator in validators
@@ -12,9 +17,9 @@ module.exports = ->
     fArgs = Array.prototype.slice.call arguments
 
     for k, v of fArgs
-      if !validators[k](v)
-        console.log "Validation error in object", v
-        throw new Error("Validation error: argument #{k} #{v}")
+      s = validators[k](v)
+      if s != true
+        main.getReporter()("Validation error in argument #{arguments[k]}, #{v}: #{s}")
 
-    f.apply(null, fArgs)
+    f.apply(this, fArgs)
 

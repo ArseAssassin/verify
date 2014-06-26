@@ -5,7 +5,7 @@ verifiers = require "../src/verifiers"
 describe "verifiers", ->
   describe "object", ->
     it "shouldn't accept null", ->
-      assert.equal verifiers.object(null), false
+      assert.equal verifiers.object(null), "value needs to be an object"
 
     it "should accept object", ->
       assert verifiers.object({})
@@ -41,17 +41,17 @@ describe "verifiers", ->
     it "should accept valid arrays", ->
       a = verifiers.arrayOf (x) -> x == 3
       assert a [3, 3, 3]
-      assert !a [3, 4, 5]
+      assert.equal a([3, 4, 5]), "array verification needs to pass on value 4: false"
 
     it "should not accept non-arrays", ->
       a = verifiers.arrayOf (x) -> x == 3
-      assert !a {}
+      assert.equal a({}), "value needs to be an array"
 
-  describe "equals", ->
+  describe "equal", ->
     it "should accept identical values", ->
       f = verifiers.equal 3
       assert f 3
-      assert !f 2
+      assert.equal f(2), "value needs to equal 3"
 
   describe "blueprint", ->
     it "should fail if any matcher fails", ->
@@ -65,10 +65,11 @@ describe "verifiers", ->
         b: 2
         c: 3
 
-      assert !a
+      assert.equal a(
         a: 1
         b: 2
         c: 5
+      ), "blueprint verification needs to pass on field c: false"
 
     it "should handle nested properties", ->
       a = verifiers.blueprint
@@ -83,21 +84,22 @@ describe "verifiers", ->
           b: 2
         b: 3
 
-      assert !a
+      assert.equal a(
         a:
           a: 4
           b: 2
         b: 3
+      ), "blueprint verification needs to pass on field a: blueprint verification needs to pass on field a: false"
 
     it "should fail on extra fields", ->
       a = verifiers.blueprint
         a:
           a: (x) -> x == 1
 
-      assert.throws -> a
+      assert.equal a(
         a:
           a: 1
-        b: 2
+        b: 2), "field b defined in blueprint needs to be present in value"
 
     describe "partial", ->
       it "should not fail on missing fields", ->
@@ -108,8 +110,8 @@ describe "verifiers", ->
         assert verifiers.partial(a)
           a: 1
 
-        assert !verifiers.partial(a)
-          a: 2
+        assert.equal verifiers.partial(a)(
+          a: 2), "blueprint verification needs to pass on field a: false"
 
 
 
