@@ -7,6 +7,7 @@ verify
 
 Verify is a JavaScript library designed to solve the `undefined` problem.
 
+`
 > > f = (a) -> a + 2
 > > f(undefined)
 > NaN
